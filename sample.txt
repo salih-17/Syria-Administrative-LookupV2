@@ -1,0 +1,43 @@
+              Country_en                 Country_ar Country_pcode Governorate_en Governorate_ar Governorate_pcode      District_en District_ar District_pcode   Subdistrict_en   Subdistrict_ar Subdistrict_pcode Location_Type Community_Neighborhood_en Community_Neighborhood_ar Community_Neighborhood_pcode  Longitude   Latitude
+0   Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0705            Ariha       أريحا       SY070500            Ariha       مركز أريحا             C8380     Community                  Al Kfeer                    الكفير                        C8380  36.500305  35.839905
+1   Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0705            Ariha       أريحا       SY070500            Ariha       مركز أريحا             C8381     Community                 Al Maljaa                    الملجأ                        C8381  36.602905  35.776123
+2   Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0705            Ariha       أريحا       SY070500            Ariha       مركز أريحا             C8382     Community                    Segata                    سيغاتا                        C8382  36.648499  35.730286
+3   Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0705            Ariha       أريحا       SY070502          Mhambal            محمبل             C8383     Community                 Al qonfud                    القنفد                        C8383  36.417297  35.798889
+4   Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0705            Ariha       أريحا       SY070502          Mhambal            محمبل             C8384     Community                  Hila Dam                   سد حيلا                        C8384  36.495483  35.852478
+5   Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0704  Jisr-Ash-Shugur  جسر الشغور       SY070400  Jisr-Ash-Shugur  مركز جسر الشغور             C8385     Community         Al Sheakh Ibrahim             الشيخ ابراهيم                        C8385  36.393127  35.873901
+6   Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0704  Jisr-Ash-Shugur  جسر الشغور       SY070400  Jisr-Ash-Shugur  مركز جسر الشغور             C8386     Community                Al Enabiat                 العنابيات                        C8386  36.378296  35.885315
+7   Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0704  Jisr-Ash-Shugur  جسر الشغور       SY070400  Jisr-Ash-Shugur  مركز جسر الشغور             C8387     Community         Al Marj Al Akhdar              المرج الأخضر                        C8387  36.302673  35.777283
+8   Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0704  Jisr-Ash-Shugur  جسر الشغور       SY070400  Jisr-Ash-Shugur  مركز جسر الشغور             C8388     Community               Eyn albarda               عين الباردة                        C8388  36.338074  35.817078
+9   Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0704  Jisr-Ash-Shugur  جسر الشغور       SY070400  Jisr-Ash-Shugur  مركز جسر الشغور             C8389     Community         Mazraet Al Baseel              مزرعة الباسل                        C8389  36.327515  35.792480
+10  Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0704  Jisr-Ash-Shugur  جسر الشغور       SY070400  Jisr-Ash-Shugur  مركز جسر الشغور             C8390     Community         Mazraet al hammam              مزرعة الحمام                        C8390  36.413086  35.816284
+11  Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0704  Jisr-Ash-Shugur  جسر الشغور       SY070400  Jisr-Ash-Shugur  مركز جسر الشغور             C8391     Community    Mazraet Al Haj Hammoud            مزرعة حاج حمود                        C8391  36.309875  35.838074
+12  Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0704  Jisr-Ash-Shugur  جسر الشغور       SY070400  Jisr-Ash-Shugur  مركز جسر الشغور             C8392     Community           Mazraet Qatroun               مزرعة قطرون                        C8392  36.303711  35.830078
+13  Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0704  Jisr-Ash-Shugur  جسر الشغور       SY070400  Jisr-Ash-Shugur  مركز جسر الشغور             C8393     Community                   Shekhep                    الشغيب                        C8393  36.242126  35.847473
+14  Syrian Arab Republic  الجمهورية العربية السورية          SY07          Idleb           إدلب            SY0704  Jisr-Ash-Shugur  جسر الشغور       SY070400  Jisr-Ash-Shugur  مركز جسر الشغور             C8394     Community            Mashta Al Ateq                مشتى العتق                        C8394  36.364075  35.883301
+
+NULLS:
+Country_en                      0
+Country_ar                      0
+Country_pcode                   0
+Governorate_en                  0
+Governorate_ar                  0
+Governorate_pcode               0
+District_en                     0
+District_ar                     0
+District_pcode                  0
+Subdistrict_en                  0
+Subdistrict_ar                  0
+Subdistrict_pcode               0
+Location_Type                   0
+Community_Neighborhood_en       0
+Community_Neighborhood_ar       0
+Community_Neighborhood_pcode    0
+Longitude                       0
+Latitude                        0
+dtype: int64
+
+UNIQUE Location_Type:
+Location_Type
+Community       7593
+Neighborhood     414
+Name: count, dtype: int64
