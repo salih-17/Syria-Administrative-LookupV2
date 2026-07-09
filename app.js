@@ -61,6 +61,28 @@ function findNearest(lat,lon){
   return {point:best,distKm:bestDist};
 }
 
+/* ---------- Inside-Syria check (flags likely data-entry errors) ---------- */
+function pointInRing(lat,lon,ring){
+  let inside=false;
+  for(let i=0,j=ring.length-1;i<ring.length;j=i++){
+    const xi=ring[i][0], yi=ring[i][1], xj=ring[j][0], yj=ring[j][1];
+    const intersect = ((yi>lat)!==(yj>lat)) && (lon < (xj-xi)*(lat-yi)/(yj-yi)+xi);
+    if(intersect) inside=!inside;
+  }
+  return inside;
+}
+function pointInGeometry(lat,lon,geometry){
+  const polys = geometry.type==="Polygon" ? [geometry.coordinates] : geometry.coordinates;
+  return polys.some(rings=>{
+    if(!pointInRing(lat,lon,rings[0])) return false;
+    for(let k=1;k<rings.length;k++){ if(pointInRing(lat,lon,rings[k])) return false; }
+    return true;
+  });
+}
+function isInsideSyria(lat,lon){
+  return BOUNDARIES.governorate.features.some(f=>pointInGeometry(lat,lon,f.geometry));
+}
+
 /* ---------- State ---------- */
 let originalColumns = [];
 let matchedData = [];
@@ -229,19 +251,28 @@ function startProcessing(){
       const lon = parseCoord(row[lonCol]);
       const valid = isFinite(lat) && isFinite(lon) && Math.abs(lat)<=90 && Math.abs(lon)<=180 && !(lat===0&&lon===0);
       let rec = Object.assign({}, row, {
-        adm_id:i, adm_lat:lat, adm_lon:lon, adm_valid:valid,
+        adm_id:i, adm_lat:lat, adm_lon:lon, adm_valid:valid, adm_outsideSyria:false,
         adm_gEn:"",adm_gAr:"",adm_gP:"",adm_dEn:"",adm_dAr:"",adm_dP:"",
         adm_sEn:"",adm_sAr:"",adm_sP:"",adm_cEn:"",adm_cAr:"",adm_cP:"",
         adm_type:"",adm_distKm:null
       });
       if(valid){
         const {point,distKm} = findNearest(lat,lon);
+        const insideSyria = isInsideSyria(lat,lon);
+        rec.adm_outsideSyria = !insideSyria;
         if(point){
+          // "nearest known point" is informative regardless of containment.
+          rec.adm_cEn=point.cEn; rec.adm_cAr=point.cAr; rec.adm_cP=point.cP;
+          rec.adm_type=point.type; rec.adm_distKm=Math.round(distKm*100)/100;
+        }
+        if(insideSyria && point){
           rec.adm_gEn=point.gEn; rec.adm_gAr=point.gAr; rec.adm_gP=point.gP;
           rec.adm_dEn=point.dEn; rec.adm_dAr=point.dAr; rec.adm_dP=point.dP;
           rec.adm_sEn=point.sEn; rec.adm_sAr=point.sAr; rec.adm_sP=point.sP;
-          rec.adm_cEn=point.cEn; rec.adm_cAr=point.cAr; rec.adm_cP=point.cP;
-          rec.adm_type=point.type; rec.adm_distKm=Math.round(distKm*100)/100;
+        } else {
+          rec.adm_gEn="Outside Syria"; rec.adm_gAr="خارج سوريا"; rec.adm_gP="OUTSIDE";
+          rec.adm_dEn=""; rec.adm_dAr=""; rec.adm_dP="";
+          rec.adm_sEn=""; rec.adm_sAr=""; rec.adm_sP="";
         }
       }
       matchedData.push(rec);
@@ -260,10 +291,14 @@ function startProcessing(){
 function finishProcessing(){
   document.getElementById("progressSection").hidden = true;
   const invalidCount = matchedData.filter(r=>!r.adm_valid).length;
+  const outsideCount = matchedData.filter(r=>r.adm_valid && r.adm_outsideSyria).length;
   const alertEl = document.getElementById("invalidAlert");
-  if(invalidCount>0){
+  const messages = [];
+  if(invalidCount>0) messages.push(`تم تجاهل ${invalidCount} صف بسبب عدم وجود إحداثيات صالحة (لن تظهر على الخريطة أو ضمن التصفية الإدارية).`);
+  if(outsideCount>0) messages.push(`تم تصنيف ${outsideCount} موقع كـ "خارج سوريا" لأن إحداثياته تقع خارج حدود الجمهورية العربية السورية — قد يكون هذا خطأ في إدخال الإحداثيات، يمكنك عزلها عبر تصفية "خارج سوريا" في قائمة المحافظة.`);
+  if(messages.length){
     alertEl.hidden = false;
-    alertEl.textContent = `تنبيه: تم تجاهل ${invalidCount} صف بسبب عدم وجود إحداثيات صالحة (لن تظهر على الخريطة أو ضمن التصفية الإدارية).`;
+    alertEl.textContent = "تنبيه: " + messages.join(" ");
   } else {
     alertEl.hidden = true;
   }
@@ -534,12 +569,12 @@ function countBy(list, pField, arField){
   return Array.from(map.values()).sort((a,b)=>b.count-a.count);
 }
 
-function renderBars(containerId, data, max){
+function renderBars(containerId, data){
   const el = document.getElementById(containerId);
   const top = data.slice(0,8);
-  const maxCount = data.length? data[0].count : 1;
+  const maxCount = data.length? Math.max(...data.map(d=>d.count)) : 1;
   el.innerHTML = top.map(d=>`
-    <div class="bar-row">
+    <div class="bar-row${d.outside?" outside":""}">
       <div class="bar-labels"><span>${escapeHtml(d.name)}</span><b>${d.count.toLocaleString("en-US")}</b></div>
       <div class="bar-track"><div class="bar-fill" style="width:${Math.max(4,Math.round(d.count/maxCount*100))}%"></div></div>
     </div>`).join("") + (data.length>8 ? `<div class="progress-label">+ ${data.length-8} أخرى</div>` : "");
@@ -548,13 +583,23 @@ function renderBars(containerId, data, max){
 function renderStats(){
   const valid = filteredData;
   document.getElementById("statTotal").textContent = valid.length.toLocaleString("en-US");
-  const govCounts = countBy(valid,"adm_gP","adm_gAr");
-  const distCounts = countBy(valid,"adm_dP","adm_dAr");
-  const subdistCounts = countBy(valid,"adm_sP","adm_sAr");
+
+  const outsideRows = valid.filter(r=>r.adm_outsideSyria);
+  const insideRows = valid.filter(r=>!r.adm_outsideSyria);
+
+  const govCounts = countBy(insideRows,"adm_gP","adm_gAr");
+  const distCounts = countBy(insideRows,"adm_dP","adm_dAr");
+  const subdistCounts = countBy(insideRows,"adm_sP","adm_sAr");
   document.getElementById("statGov").textContent = govCounts.length;
   document.getElementById("statDist").textContent = distCounts.length;
   document.getElementById("statSubdist").textContent = subdistCounts.length;
-  renderBars("barsGov", govCounts);
+  document.getElementById("statOutside").textContent = outsideRows.length.toLocaleString("en-US");
+
+  const govBars = govCounts.slice();
+  if(outsideRows.length>0) govBars.push({name:"خارج سوريا", count:outsideRows.length, outside:true});
+  govBars.sort((a,b)=>b.count-a.count);
+
+  renderBars("barsGov", govBars);
   renderBars("barsDist", distCounts);
   renderBars("barsSubdist", subdistCounts);
 }
